@@ -1,0 +1,275 @@
+<!-- <!DOCTYPE html>
+
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <br><br>
+    <input type="text" id="fname" placeholder="Enter FirstName">
+    <input type="text" id="lname" placeholder="Enter LastName">
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+    <button onclick="submit()">Submit</button>
+    <br><br>
+    <br><br>      
+    <br><br>
+
+    
+    <table border="5" cellpadding="10" cellspacing="5">
+        <thead>
+            <th>Id</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Remove</th>
+            <th>Edit</th>
+        </thead>
+        <tbody id="tbody">
+
+        </tbody>
+    </table>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let tbody = document.getElementById("tbody");
+
+
+        function submit() {
+            let firstName = document.getElementById("fname").value;
+            let lastName = document.getElementById("lname").value;
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+
+            let user = {
+                firstName,
+                lastName,
+                email,
+                password,
+            };
+
+            users.push(user);
+
+            localStorage.setItem("users", JSON.stringify(users));
+
+            console.log(users);
+            location.reload();
+        }
+
+
+        //   add
+        function loadUser() {
+            users.map((val, index) => {
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+           <td>${index + 1}</td>
+          <td>${val.firstName}</td>
+          <td>${val.lastName}</td>
+          <td>${val.email}</td>
+          <td>${val.password}</td>
+          <td><button onclick="deleteUser(${index})">delete</button></td>
+          <td><button onclick="viewUser(${index})">View</button></td>
+          `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        loadUser();
+
+        //   remove
+        function deleteUser(index) {
+            console.log(index);
+            users.splice(index, 1);
+            console.log(users);
+            localStorage.setItem("users", JSON.stringify(users));
+            location.reload();
+        }
+
+        // edit
+        //view user
+        function viewUser(index) {
+            let result = users[index];
+
+            console.log(result);
+            document.getElementById("firstname").value = result.firstName;
+            document.getElementById("lastname").value = result.lastName;
+            document.getElementById("mail").value = result.email;
+            document.getElementById("password").value = result.password;
+            document.getElementById("index").value = index;
+
+        }
+
+    </script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <br><br>
+    <input type="text" id="fname" placeholder="Enter FirstName" >
+    <input type="text" id="lname" placeholder="Enter LastName" >
+    <input type="email" id="email" placeholder="Enter Email" >
+    <input type="password" id="password" placeholder="Enter Password" >
+    <button onclick="submit()">Submit</button>
+    <br><br>
+    <br><br>
+    <br><br>
+
+
+    <table border="5" cellpadding="10" cellspacing="5">
+        <thead>
+            <th>Id</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Remove</th>
+            <th>Edit</th>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Edit User</h2>
+            <input type="hidden" id="editIndex">
+            <input type="text" id="editFname" placeholder="Enter FirstName">
+            <input type="text" id="editLname" placeholder="Enter LastName">
+            <input type="email" id="editEmail" placeholder="Enter Email">
+            <input type="password" id="editPassword" placeholder="Enter Password">
+            <button onclick="saveEdit()">Save</button>
+        </div>
+    </div>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let tbody = document.getElementById("tbody");
+
+        function submit() {
+            let firstName = document.getElementById("fname").value;
+            let lastName = document.getElementById("lname").value;
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let user = {
+                firstName,
+                lastName,
+                email,
+                password,
+            };
+            users.push(user);
+            localStorage.setItem("users", JSON.stringify(users));
+            console.log(users);
+            location.reload();
+        }
+
+        function loadUser() {
+            users.map((val, index) => {
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${val.firstName}</td>
+                    <td>${val.lastName}</td>
+                    <td>${val.email}</td>
+                    <td>${val.password}</td>
+                    <td><button onclick="deleteUser(${index})">delete</button></td>
+                    <td><button onclick="editUser(${index})">Edit</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        loadUser();
+
+        function deleteUser(index) {
+            console.log(index);
+            users.splice(index, 1);
+            console.log(users);
+            localStorage.setItem("users", JSON.stringify(users));
+            location.reload();
+        }
+
+        function editUser(index) {
+            let user = users[index];
+            document.getElementById("editIndex").value = index;
+            document.getElementById("editFname").value = user.firstName;
+            document.getElementById("editLname").value = user.lastName;
+            document.getElementById("editEmail").value = user.email;
+            document.getElementById("editPassword").value = user.password;
+            document.getElementById("editModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        function saveEdit() {
+            let index = document.getElementById("editIndex").value;
+            users[index].firstName = document.getElementById("editFname").value;
+            users[index].lastName = document.getElementById("editLname").value;
+            users[index].email = document.getElementById("editEmail").value;
+            users[index].password = document.getElementById("editPassword").value;
+            localStorage.setItem("users", JSON.stringify(users));
+            location.reload();
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById("editModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
+
